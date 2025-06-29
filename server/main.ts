@@ -1,3 +1,7 @@
+enum PacketType {
+    Pixel = 1,
+}
+
 Deno.serve({ port: 9023 }, (req) => {
     if (req.headers.get("upgrade") != "websocket") {
         return new Response(null, { status: 501 })
@@ -12,6 +16,11 @@ Deno.serve({ port: 9023 }, (req) => {
     socket.addEventListener("open", () => {
         console.log("Client connected")
     })
+
+    setInterval(() => {
+        if (!active) return
+        socket.send(new Uint8Array([PacketType.Pixel, 10, 0, 20, 0, 0, 255, 0]).buffer)
+    }, 500)
 
     socket.addEventListener("message", (event) => {
         if (event.data.startsWith("size=")) {
