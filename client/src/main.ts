@@ -4,6 +4,7 @@ function start() {
     const ws = new WebSocket("ws://" + ip)
     ws.onopen = () => {
         ws.send("size=" + innerWidth + "x" + innerHeight)
+        ws.send("go")
     }
 }
 start()
