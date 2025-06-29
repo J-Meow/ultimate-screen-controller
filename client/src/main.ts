@@ -20,7 +20,7 @@ function start() {
         ws.send("go")
     }
     ws.onmessage = async (ev) => {
-        const data = await (ev.data as Blob).bytes()
+        const data = new Uint8Array(await (ev.data as Blob).arrayBuffer())
         if (0 in data) {
             if (data[0] == PacketType.ImageData) {
                 const imageData = new ImageData(new Uint8ClampedArray(data.slice(1)), mainCanvas.width, mainCanvas.height)
