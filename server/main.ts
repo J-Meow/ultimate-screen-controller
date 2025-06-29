@@ -17,7 +17,7 @@ Deno.serve({ port: 9023 }, (req) => {
         console.log("Client connected")
     })
 
-    setInterval(() => {
+    const interval = setInterval(() => {
         if (!active) return
         socket.send(new Uint8Array([PacketType.Pixel, 10, 0, 20, 0, 0, 255, 0]).buffer)
     }, 500)
@@ -33,6 +33,9 @@ Deno.serve({ port: 9023 }, (req) => {
             active = true
         }
     })
+
+    socket.addEventListener("close", () => clearInterval(interval))
+    socket.addEventListener("error", () => clearInterval(interval))
 
     return response
 })
