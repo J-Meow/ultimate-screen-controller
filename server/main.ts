@@ -6,7 +6,7 @@ Deno.serve({ port: 9023 }, (req) => {
     const { socket, response } = Deno.upgradeWebSocket(req)
 
     socket.addEventListener("open", () => {
-        console.log("a client connected!")
+        console.log("Client connected")
     })
 
     socket.addEventListener("message", (event) => {
