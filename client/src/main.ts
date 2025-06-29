@@ -9,22 +9,28 @@ const ctx = mainCanvas.getContext("2d")!
 mainCanvas.width = innerWidth
 mainCanvas.height = innerHeight
 
-function uInt16ToInt(x: number, y: number) {
-    return (y << 8) + x
+function uInt32ToInt(w: number, x: number, y: number, z: number) {
+    return (z << 24) + (y << 16) + (x << 8) + w
 }
 
 function start() {
     const ws = new WebSocket("ws://" + ip)
+    let startTime: number
     ws.onopen = () => {
         ws.send("size=" + innerWidth + "x" + innerHeight)
         ws.send("go")
+        startTime = Date.now()
     }
     ws.onmessage = async (ev) => {
         const data = new Uint8Array(await (ev.data as Blob).arrayBuffer())
         if (0 in data) {
             if (data[0] == PacketType.ImageData) {
-                const imageData = new ImageData(new Uint8ClampedArray(data.slice(1)), mainCanvas.width, mainCanvas.height)
-                ctx.putImageData(imageData, 0, 0)
+                // @ts-expect-error because I don't feel like fixing this thing
+                const delayTime = uInt32ToInt(...Array.from(data.slice(1, 5)))
+                const imageData = new ImageData(new Uint8ClampedArray(data.slice(5)), mainCanvas.width, mainCanvas.height)
+                setTimeout(() => {
+                    ctx.putImageData(imageData, 0, 0)
+                }, delayTime - (Date.now() - startTime))
             }
         }
     }
