@@ -1,6 +1,6 @@
 const ip = "127.0.0.1:9023"
 enum PacketType {
-    Pixel = 1,
+    ImageData = 1,
 }
 
 const mainCanvas = document.getElementById("main") as HTMLCanvasElement
@@ -22,9 +22,9 @@ function start() {
     ws.onmessage = async (ev) => {
         const data = await (ev.data as Blob).bytes()
         if (0 in data) {
-            if (data[0] == PacketType.Pixel) {
-                ctx.fillStyle = `rgb(${data[5]}, ${data[6]}, ${data[7]})`
-                ctx.fillRect(uInt16ToInt(data[1], data[2]), uInt16ToInt(data[3], data[4]), 1, 1)
+            if (data[0] == PacketType.ImageData) {
+                const imageData = new ImageData(new Uint8ClampedArray(data.slice(1)), mainCanvas.width, mainCanvas.height)
+                ctx.putImageData(imageData, 0, 0)
             }
         }
     }

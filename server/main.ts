@@ -1,5 +1,5 @@
 enum PacketType {
-    Pixel = 1,
+    ImageData = 1,
 }
 
 Deno.serve({ port: 9023 }, (req) => {
@@ -19,7 +19,7 @@ Deno.serve({ port: 9023 }, (req) => {
 
     const interval = setInterval(() => {
         if (!active) return
-        socket.send(new Uint8Array([PacketType.Pixel, 10, 0, 20, 0, 0, 255, 0]).buffer)
+        socket.send(new Uint8Array([PacketType.ImageData, ...new Array(width * height).fill([255, Math.floor(Math.random() * 255), 255, 255]).flat()]).buffer)
     }, 500)
 
     socket.addEventListener("message", (event) => {
